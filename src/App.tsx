@@ -7,82 +7,68 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 import { TestSettings, TestResult } from "./types";
 import { DEFAULT_TEST_SETTINGS, STORAGE_KEYS } from "./constants";
 
-/**
- * Main application component
- * 
- * Manages the overall application state including:
- * - Current screen navigation
- * - Test settings persistence
- * - Test results storage
- * - Screen switching logic
- */
 function App() {
-    // Current screen state
-    const [currentScreen, setCurrentScreen] = useState<
-        "test" | "stats" | "settings"
-    >("test");
-    
-    // Settings management with localStorage persistence
-    const [settings, setSettings] = useLocalStorage<TestSettings>(
-        STORAGE_KEYS.SETTINGS,
-        DEFAULT_TEST_SETTINGS,
-    );
-    
-    // Results management with localStorage persistence
-    const [results, setResults] = useLocalStorage<TestResult[]>(
-        STORAGE_KEYS.RESULTS,
-        [],
-    );
+  // Current screen state
+  const [currentScreen, setCurrentScreen] = useState<
+    "test" | "stats" | "settings"
+  >("test");
 
-    /**
-     * Handles test completion by adding the result to storage
-     */
-    const handleTestComplete = (result: TestResult) => {
-        setResults((prev) => [...prev, result]);
-    };
+  // Settings management with localStorage persistence
+  const [settings, setSettings] = useLocalStorage<TestSettings>(
+    STORAGE_KEYS.SETTINGS,
+    DEFAULT_TEST_SETTINGS
+  );
 
-    /**
-     * Handles settings changes by updating the stored settings
-     */
-    const handleSettingsChange = (newSettings: TestSettings) => {
-        setSettings(newSettings);
-    };
+  // Results management with localStorage persistence
+  const [results, setResults] = useLocalStorage<TestResult[]>(
+    STORAGE_KEYS.RESULTS,
+    []
+  );
 
-    /**
-     * Handles screen navigation
-     */
-    const handleScreenChange = (screen: "test" | "stats" | "settings") => {
-        setCurrentScreen(screen);
-    };
+  /**
+   * Handles test completion by adding the result to storage
+   */
+  const handleTestComplete = (result: TestResult) => {
+    setResults((prev) => [...prev, result]);
+  };
 
-    return (
-        <div className="min-h-screen bg-custom-bg text-on-background font-inter">
-            <Header
-                currentScreen={currentScreen}
-                onScreenChange={handleScreenChange}
-            />
+  /**
+   * Handles settings changes by updating the stored settings
+   */
+  const handleSettingsChange = (newSettings: TestSettings) => {
+    setSettings(newSettings);
+  };
 
-            <main className="pb-8">
-                {currentScreen === "test" && (
-                    <TypingTest
-                        settings={settings}
-                        onTestComplete={handleTestComplete}
-                    />
-                )}
+  /**
+   * Handles screen navigation
+   */
+  const handleScreenChange = (screen: "test" | "stats" | "settings") => {
+    setCurrentScreen(screen);
+  };
 
-                {currentScreen === "stats" && (
-                    <Stats results={results} />
-                )}
+  return (
+    <div className="min-h-screen bg-custom-bg text-on-background font-inter">
+      <Header
+        currentScreen={currentScreen}
+        onScreenChange={handleScreenChange}
+      />
 
-                {currentScreen === "settings" && (
-                    <Settings
-                        settings={settings}
-                        onSettingsChange={handleSettingsChange}
-                    />
-                )}
-            </main>
-        </div>
-    );
+      <main className="pb-8">
+        {currentScreen === "test" && (
+          <TypingTest settings={settings} onTestComplete={handleTestComplete} />
+        )}
+
+        {currentScreen === "stats" && <Stats results={results} />}
+
+        {currentScreen === "settings" && (
+          <Settings
+            settings={settings}
+            onSettingsChange={handleSettingsChange}
+          />
+        )}
+      </main>
+    </div>
+  );
 }
 
 export default App;
